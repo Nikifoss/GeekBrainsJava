@@ -52,11 +52,11 @@ public class EchoServer {
                 String message = input.readUTF();
                 System.out.println("Получено сообщение " + message);
                 if (message.equals("/end")){
-                    break;
+                    System.exit(0);
                 }
             } catch (IOException e){
                 System.out.println("Соединение было закрыто");
-                break;
+                System.exit(0);
             }
         }
     }
