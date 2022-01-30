@@ -1,17 +1,29 @@
 package ru.kareev.client.controllers;
 
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ru.kareev.client.ClientChat;
-import ru.kareev.client.Network;
+import ru.kareev.client.dialogs.Dialogs;
+import ru.kareev.client.model.Network;
+import ru.kareev.client.model.ReadCommandListener;
+import ru.kareev.clientserver.Command;
+import ru.kareev.clientserver.CommandType;
+import ru.kareev.clientserver.commands.ClientMessageCommandData;
+import ru.kareev.clientserver.commands.PrivateMessageCommandData;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.function.Consumer;
+import java.util.List;
 
 public class ClientController {
+
+    private static final List<String> USER_TEST_DATA = List.of(
+            "username1",
+            "username2",
+            "username3"
+    );
 
     @FXML private TextArea textArea;
     @FXML private TextField textField;
@@ -19,6 +31,11 @@ public class ClientController {
     @FXML public ListView<String> userList;
 
     private ClientChat application;
+
+    @FXML
+    public void initialize() {
+        userList.setItems(FXCollections.observableList(USER_TEST_DATA));
+    }
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -34,8 +51,11 @@ public class ClientController {
         }
 
         try {
-            message = sender != null ? String.join(": ", sender, message) : message;
-            Network.getInstance().sendMessage(message);
+            if (sender != null) {
+                Network.getInstance().sendPrivateMessage(sender, message);
+            } else {
+                Network.getInstance().sendMessage(message);
+            }
         } catch (IOException e) {
             application.showErrorDialog("Ошибка передачи данных по сети");
         }
@@ -62,15 +82,13 @@ public class ClientController {
     }
 
     public void initializeMessageHandler() {
-        Network.getInstance().waitMessage(new Consumer<String>() {
+        Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
-            public void accept(String message) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        appendMessageToChat("Сервер", message);
-                    }
-                });
+            public void processReceivedCommand(Command command) {
+                if (command.getType() == CommandType.CLIENT_MESSAGE) {
+                    ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
+                    appendMessageToChat(data.getSender(), data.getMessage());
+                }
             }
         });
     }

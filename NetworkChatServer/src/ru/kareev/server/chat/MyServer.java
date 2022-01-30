@@ -1,5 +1,6 @@
 package ru.kareev.server.chat;
 
+import ru.kareev.clientserver.Command;
 import ru.kareev.server.chat.auth.AuthService;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -28,26 +29,43 @@ public class MyServer {
     }
 
     private void waitAndProcessClientConnections(ServerSocket serverSocket) throws IOException {
-        System.out.println("Waiting for new client connections");
         Socket clientSocket = serverSocket.accept();
         System.out.println("Client has been connected");
         ClientHandler clientHandler = new ClientHandler(this, clientSocket);
         clientHandler.handle();
     }
 
-    public void broadcastMessage(String message, ClientHandler sender) throws IOException {
-        for(ClientHandler client : clients) {
+    public synchronized void broadcastMessage(String message, ClientHandler sender) throws IOException {
+        for (ClientHandler client : clients) {
             if(client != sender){
-            client.sendMessage(message);
+            client.sendCommand(Command.clientMessageCommand(sender.getUsername(), message));
              }
         }
     }
 
-    public void subscribe(ClientHandler clientHandler){
+    public synchronized void sendPrivateMessage(ClientHandler sender, String recipient, String privateMessage) throws IOException {
+        for (ClientHandler client : clients) {
+            if(client != sender && client.getUsername().equals(recipient)) {
+                client.sendCommand(Command.clientMessageCommand(sender.getUsername(), privateMessage));
+                break;
+            }
+        }
+    }
+
+    public synchronized boolean isUserNameBusy(String username) {
+        for (ClientHandler client : clients) {
+            if(client.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized void subscribe(ClientHandler clientHandler){
         this.clients.add(clientHandler);
     }
 
-    public void unsubscribe(ClientHandler clientHandler){
+    public synchronized void unsubscribe(ClientHandler clientHandler){
         this.clients.remove(clientHandler);
     }
 
