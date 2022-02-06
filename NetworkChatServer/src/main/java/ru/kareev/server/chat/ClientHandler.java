@@ -5,7 +5,6 @@ import ru.kareev.clientserver.CommandType;
 import ru.kareev.clientserver.commands.AuthCommandData;
 import ru.kareev.clientserver.commands.PrivateMessageCommandData;
 import ru.kareev.clientserver.commands.PublicMessageCommandData;
-import ru.kareev.server.chat.auth.AuthService;
 
 import java.io.*;
 import java.net.Socket;
