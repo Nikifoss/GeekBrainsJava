@@ -1,10 +1,6 @@
 package Lesson06;
 
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.SocketException;
-import java.util.Scanner;
 import java.util.function.Consumer;
 
 public class Client {

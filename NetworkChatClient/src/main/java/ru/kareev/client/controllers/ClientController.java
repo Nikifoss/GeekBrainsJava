@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ru.kareev.client.ClientChat;
-import ru.kareev.client.dialogs.Dialogs;
 import ru.kareev.client.model.Network;
 import ru.kareev.client.model.ReadCommandListener;
 import ru.kareev.clientserver.Command;
@@ -19,10 +18,11 @@ import java.util.List;
 
 public class ClientController {
 
-    private static final List<String> USER_TEST_DATA = List.of(
+    public static  List<String> USER_TEST_DATA = List.of(
             "username1",
             "username2",
-            "username3"
+            "username3",
+            "username4"
     );
 
     @FXML private TextArea textArea;
