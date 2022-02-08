@@ -1,18 +1,14 @@
 package ru.kareev.client;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import ru.kareev.client.controllers.AuthController;
 import ru.kareev.client.controllers.ClientController;
-import ru.kareev.client.model.Network;
 
 import java.io.IOException;
 
@@ -80,7 +76,7 @@ public class ClientChat extends Application {
         getChatController().initializeMessageHandler();
     }
 
-    public void showErrorDialog(String msg){
+    public void showErrorDialog(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");
         alert.setContentText(msg);
