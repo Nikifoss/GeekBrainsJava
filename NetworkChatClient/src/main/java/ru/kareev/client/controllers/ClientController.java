@@ -2,9 +2,6 @@ package ru.kareev.client.controllers;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import ru.kareev.client.ClientChat;
@@ -13,10 +10,9 @@ import ru.kareev.client.model.ReadCommandListener;
 import ru.kareev.clientserver.Command;
 import ru.kareev.clientserver.CommandType;
 import ru.kareev.clientserver.commands.ClientMessageCommandData;
-import ru.kareev.clientserver.sqlService.SQLFunction;
+import ru.kareev.clientserver.commands.UpdateUserListCommandData;
 
-
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -29,42 +25,11 @@ public class ClientController {
     @FXML
     private Button sendButton;
     @FXML
-    private ListView<String> userList;
-    @FXML
-    ObservableList<String> USER_LIST_ONLINE = FXCollections.observableArrayList();
-
+    public ListView<String> userList;
 
     private ClientChat application;
-
-    @FXML
-    public void initialize() {
-        periodicUpdatingOfList();
-    }
-
-    private void periodicUpdatingOfList() {
-
-        Service<Void> service = new Service<Void>() {
-            @Override
-            protected Task<Void> createTask() {
-                return new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        while (true) {
-                            try {
-                                Thread.sleep(1000);
-                                USER_LIST_ONLINE.setAll(SQLFunction.getListUsernameFromSQL());
-                                userList.setItems(FXCollections.observableList(USER_LIST_ONLINE));
-                                System.out.println(USER_LIST_ONLINE);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                };
-            }
-        };
-        service.start();
-    }
+    private String time = DateFormat.getDateTimeInstance().format(new Date());
+    private String username;
 
     public void sendMessage() {
         String message = textField.getText().trim();
@@ -93,11 +58,13 @@ public class ClientController {
     }
 
     private void appendMessageToChat(String sender, String message) {
-        textArea.appendText(DateFormat.getDateTimeInstance().format(new Date()));
+        textArea.appendText(time);
         textArea.appendText(System.lineSeparator());
 
         if (sender != null) {
             textArea.appendText(sender + ": ");
+            textArea.appendText(System.lineSeparator());
+            safeHistory(sender, message);
         }
         textArea.appendText(message);
         textArea.appendText(System.lineSeparator());
@@ -106,17 +73,36 @@ public class ClientController {
         textField.clear();
     }
 
+    private void safeHistory(String sender, String message) {
+        String m = (time + " " + sender + " " + message + "\n");
+        File file = new File(username + ".txt");
+        try (FileOutputStream fileOutputStream = new FileOutputStream(username + ".txt", file.exists())) {
+           fileOutputStream.write(m.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setApplication(ClientChat application) {
         this.application = application;
     }
 
-    public void initializeMessageHandler() {
+    public void initializeMessageHandler(String username) {
+        this.username = username;
         Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
             public void processReceivedCommand(Command command) {
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
                     ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
                     appendMessageToChat(data.getSender(), data.getMessage());
+                } else if (command.getType() == CommandType.UPDATE_USER_LIST) {
+                    UpdateUserListCommandData data = (UpdateUserListCommandData) command.getData();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            userList.setItems(FXCollections.observableList(data.getUsers()));
+                        }
+                    });
                 }
             }
         });

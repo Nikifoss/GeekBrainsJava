@@ -5,7 +5,6 @@ import ru.kareev.clientserver.CommandType;
 import ru.kareev.clientserver.commands.AuthCommandData;
 import ru.kareev.clientserver.commands.PrivateMessageCommandData;
 import ru.kareev.clientserver.commands.PublicMessageCommandData;
-import ru.kareev.server.chat.auth.AuthService;
 
 import java.io.*;
 import java.net.Socket;
@@ -16,14 +15,14 @@ public class ClientHandler {
     private final Socket clientSocket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
-
-    private String username;
+    private String userName;
 
     public ClientHandler(MyServer myServer, Socket clientSocket) {
         this.server = myServer;
         this.clientSocket = clientSocket;
 
     }
+
 
     public void handle() throws IOException {
         outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -67,7 +66,7 @@ public class ClientHandler {
                 } else if (server.isUserNameBusy(userName)) {
                     sendCommand(Command.errorCommand("Такой пользователь уже существует"));
                 } else {
-                    this.username = userName;
+                    this.userName = userName;
                     sendCommand(Command.authOkCommand(userName));
                     server.subscribe(this);
                     return;
@@ -122,12 +121,13 @@ public class ClientHandler {
         this.server.broadcastMessage(message , this);
     }
 
+
     private void closeConnection() throws IOException {
         server.unsubscribe(this);
         clientSocket.close();
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 }
