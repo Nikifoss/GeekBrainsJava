@@ -13,7 +13,7 @@ public class Lesson03_4 {
         fixedService.execute(Lesson03_4::printA);
         fixedService.execute(Lesson03_4::printB);
         fixedService.execute(Lesson03_4::printC);
-        /*Test*/
+        /*Test1*/
 
     }
 
