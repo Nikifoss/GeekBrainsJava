@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class AuthServiceSQL {
 
-    private static final String DB_URL = "jdbc:sqlite:C:\\Users\\nikif\\IdeaProjects\\ru.Kareev.chat\\NetworkChatServer\\src\\main\\resources\\Networkchat.db";
+    private static final String DB_URL = "jdbc:sqlite:C:\\Users\\nikif\\IdeaProjects\\GeekBrainsJava\\Networkchat.db";
 
     //getUsernameFromSQL создает подключение к базе данных, принимает пару логин/пароль, после чего проводит
     // поиск по логину и сопоставляет его с паролем. возвращает Username пользователя или null, если пользователь не найден
