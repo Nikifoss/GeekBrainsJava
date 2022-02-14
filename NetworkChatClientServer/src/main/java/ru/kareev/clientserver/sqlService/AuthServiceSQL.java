@@ -1,6 +1,7 @@
-package sql.jdbc;
+package ru.kareev.clientserver.sqlService;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class AuthServiceSQL {
 
@@ -58,5 +59,5 @@ public class AuthServiceSQL {
         return resLogin.equals(login);
     }
 
-
 }
+

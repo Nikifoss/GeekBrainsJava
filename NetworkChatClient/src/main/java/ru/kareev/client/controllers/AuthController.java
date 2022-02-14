@@ -1,14 +1,14 @@
 package ru.kareev.client.controllers;
 
 import javafx.application.Platform;
-import ru.kareev.client.ClientChat;
-import ru.kareev.client.dialogs.Dialogs;
-import ru.kareev.client.model.Network;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import ru.kareev.client.ClientChat;
+import ru.kareev.client.dialogs.Dialogs;
+import ru.kareev.client.model.Network;
 import ru.kareev.client.model.ReadCommandListener;
 import ru.kareev.clientserver.Command;
 import ru.kareev.clientserver.CommandType;
@@ -19,6 +19,7 @@ import java.io.IOException;
 
 public class AuthController {
 
+
     @FXML
     private TextField loginField;
     @FXML
@@ -26,14 +27,13 @@ public class AuthController {
     @FXML
     private Button authButton;
 
-    private ReadCommandListener readCommandListener;
+    private ReadCommandListener readMessageListener;
 
     @FXML
     public void executeAuth(ActionEvent actionEvent) {
         String login = loginField.getText();
         String password = passwordField.getText();
-
-        if (login == null || password == null || password.isBlank() || login.isBlank()) {
+        if (login == null || login.isBlank() || password == null || password.isBlank()) {
             Dialogs.AuthError.EMPTY_CREDENTIALS.show();
             return;
         }
@@ -56,20 +56,17 @@ public class AuthController {
     }
 
     public void initializeMessageHandler() {
-        readCommandListener = getNetwork().addReadMessageListener(new ReadCommandListener() {
+        readMessageListener = getNetwork().addReadMessageListener(new ReadCommandListener() {
             @Override
             public void processReceivedCommand(Command command) {
                 if (command.getType() == CommandType.AUTH_OK) {
                     AuthOkCommandData data = (AuthOkCommandData) command.getData();
-                    String userName = data.getUsername();
-                    Platform.runLater(() -> {
-                        ClientChat.INSTANCE.switchToMainChatWindow(userName);
-                    });
-                } else if (command.getType() == CommandType.ERROR) {
+                    String username = data.getUsername();
+                    Platform.runLater(() -> ClientChat.INSTANCE.switchToMainChatWindow(username));
+                } else if (command.getType() == CommandType.ERROR){
                     ErrorCommandData data = (ErrorCommandData) command.getData();
-                    String errorMessage = data.getErrorMessage();
                     Platform.runLater(() -> {
-                        Dialogs.AuthError.INVALID_CREDENTIALS.show(errorMessage);
+                        Dialogs.AuthError.INVALID_CREDENTIALS.show(data.getErrorMessage());
                     });
                 }
             }
@@ -77,11 +74,10 @@ public class AuthController {
     }
 
     public void close() {
-        getNetwork().removeReadMessageListener(readCommandListener);
+        getNetwork().removeReadMessageListener(readMessageListener);
     }
 
-    public Network getNetwork() {
+    private Network getNetwork() {
         return Network.getInstance();
     }
-
 }
