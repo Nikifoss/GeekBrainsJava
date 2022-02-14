@@ -1,6 +1,6 @@
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+//TEST
 public class Lesson03_4 {
     private static final Object mon = new Object();
     private static volatile char currentLetter = 'A';
