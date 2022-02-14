@@ -14,6 +14,7 @@ public class Lesson03_4 {
         fixedService.execute(Lesson03_4::printB);
         fixedService.execute(Lesson03_4::printC);
 
+
     }
 
     public static void printA() {
