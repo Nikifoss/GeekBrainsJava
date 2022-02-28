@@ -52,4 +52,5 @@ public class HomeWork3_6 {
 
         return containsValue1 && containsValue2;
     }
+
 }

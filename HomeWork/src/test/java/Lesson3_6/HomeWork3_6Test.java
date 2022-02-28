@@ -44,5 +44,4 @@ class HomeWork3_6Test {
         out.add(Arguments.arguments(new int[] {1,4,4,1,1,4,3}, false));
         return out.stream();
     }
-
 }
