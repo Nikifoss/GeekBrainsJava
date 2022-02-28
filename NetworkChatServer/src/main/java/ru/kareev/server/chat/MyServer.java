@@ -1,7 +1,8 @@
 package ru.kareev.server.chat;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.kareev.clientserver.Command;
-import ru.kareev.clientserver.sqlService.SQLFunction;
 import ru.kareev.server.chat.auth.AuthService;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,14 +10,17 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class MyServer {
+
+    private static final Logger LOGGER = LogManager.getLogger(MyServer.class);
 
     private final List<ClientHandler> clients = new ArrayList<>();
     private AuthService authService;
 
     public void start(int port){
         try(ServerSocket serverSocket = new ServerSocket(port)){
-            System.out.println("Server has been started");
+            LOGGER.info("Server has been started");
             authService = new AuthService();
 
             while (true) {
@@ -24,14 +28,14 @@ public class MyServer {
             }
 
         } catch (IOException e){
-            System.err.println("Failed to bind port " + port);
+            LOGGER.fatal("Failed to bind port " + port);
             e.printStackTrace();
         }
     }
 
     private void waitAndProcessClientConnections(ServerSocket serverSocket) throws IOException {
         Socket clientSocket = serverSocket.accept();
-        System.out.println("Client has been connected");
+        LOGGER.info("Client has been connected");
         ClientHandler clientHandler = new ClientHandler(this, clientSocket);
         clientHandler.handle();
     }
