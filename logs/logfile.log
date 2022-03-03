@@ -1,0 +1,7 @@
+INFO  2022-02-28 03:24:06 [main] ru.kareev.server.chat.MyServer (MyServer.java:24) - Server has been started
+INFO  2022-02-28 03:34:07 [main] ru.kareev.server.chat.MyServer (MyServer.java:23) - Server has been started
+INFO  2022-02-28 03:34:38 [main] ru.kareev.server.chat.MyServer (MyServer.java:38) - Client has been connected
+INFO  2022-02-28 03:34:38 [Thread-0] ru.kareev.server.chat.ClientHandler (ClientHandler.java:78) - Пользователь username1 авторизован
+INFO  2022-02-28 03:34:41 [Thread-0] ru.kareev.server.chat.ClientHandler (ClientHandler.java:123) - Сообщение asdf123 wedf34 34
+INFO  2022-02-28 03:34:56 [Thread-0] ru.kareev.server.chat.ClientHandler (ClientHandler.java:123) - Сообщение wef 123 qsd f1234 fqwef 123
+ERROR 2022-02-28 03:35:00 [Thread-0] ru.kareev.server.chat.ClientHandler (ClientHandler.java:42) - Failed to process message from client
